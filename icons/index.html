@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>W fit</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c2410c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="W fit">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#1d1a17;--mut:#7a726a;--line:#e8e1d8;--acc:#c2410c;--acc2:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15130f;--card:#201d18;--ink:#f3eee7;--mut:#a39a8f;--line:#35302a;--acc:#fb923c;--acc2:#1d1a17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15130f;--card:#201d18;--ink:#f3eee7;--mut:#a39a8f;--line:#35302a;--acc:#fb923c;--acc2:#1d1a17;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4}
+main{max-width:520px;margin:0 auto;padding:20px 16px 48px}
+.top{display:flex;justify-content:space-between;align-items:center}
+h1{font-size:30px;margin:0;letter-spacing:-1px}h1 span{color:var(--acc)}
+.sub{color:var(--mut);margin:4px 0 14px;font-size:15px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:600;background:var(--acc);color:var(--acc2);cursor:pointer;text-align:center;margin-top:10px}
+.btn.alt{background:var(--card);color:var(--ink);border:1.5px dashed var(--mut)}
+.btn.sm{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4}
+.ctx{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+select{width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:14px}
+.grid{display:grid;gap:10px;margin:14px 0 0}
+.item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px}
+.item img{width:64px;height:64px;object-fit:cover;border-radius:10px;flex:none}
+.info{flex:1;min-width:0}
+.nm{font-weight:600;display:flex;align-items:center;gap:8px}
+.row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.row select{width:auto;padding:5px 6px;font-size:13px}
+input[type=color]{width:28px;height:28px;border:2px solid var(--line);border-radius:50%;padding:0;background:none;cursor:pointer}
+.x,.del{background:none;border:0;color:var(--mut);cursor:pointer;padding:4px}
+.x{font-size:22px}.del{font-size:13px}
+.k{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer}
+.hint{font-size:13px;color:var(--mut);margin:6px 2px}
+h2{font-size:20px;margin:26px 0 10px}
+.out{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.out.best{border:2px solid var(--acc)}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:var(--acc);color:var(--acc2);border-radius:99px;padding:2px 10px;margin-bottom:8px}
+.tag.o{background:var(--line);color:var(--ink)}
+.pics{display:flex;gap:8px;overflow-x:auto}
+.pics div{flex:none;text-align:center;font-size:12px;color:var(--mut)}
+.pics img{width:84px;height:84px;object-fit:cover;border-radius:10px;display:block;margin-bottom:3px}
+.bar{display:flex;align-items:center;gap:10px;margin:10px 0 4px}
+.track{flex:1;height:8px;background:var(--line);border-radius:9px;overflow:hidden}
+.fill{height:100%;background:var(--acc)}
+.score{font-weight:700}
+.why{margin:6px 0 0;padding-left:18px;font-size:14px;color:var(--mut)}
+.acts{display:flex;gap:8px;margin-top:10px}
+.acts button{flex:1;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px;font-size:14px;font-weight:600;cursor:pointer}
+.acts button:disabled{opacity:.7}
+.sw{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid var(--line);vertical-align:-1px;margin-right:2px}
+.fh{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><h1>W <span>fit</span></h1><button class="k" id="lang"></button></div>
+<p class="sub" id="sub"></p>
+<button class="btn sm" id="install" hidden>📲 Installer W fit</button>
+<p class="hint" id="ios" hidden>Sur iPhone : touche Partager puis « Sur l’écran d’accueil ».</p>
+<div class="ctx"><select id="occ"></select><select id="sea"></select><select id="skin"></select><select id="und"></select></div>
+<input id="file" type="file" accept="image/*" multiple hidden>
+<button class="btn alt" id="add"></button>
+<p class="hint" id="hint"></p>
+<div class="grid" id="list"></div>
+<button class="btn sm" id="ai" hidden></button>
+<button class="btn" id="go" disabled></button>
+<div id="res"></div>
+<div id="favs"></div>
+<div id="ward"></div>
+<p class="hint" id="sync"></p>
+</main>
+<script>
+const L={
+fr:{sub:"Tu hésites sur quoi porter ? Prends tes habits en photo, W fit choisit les couleurs qui vont le mieux ensemble.",add:"📷 Ajouter des photos d’habits",hint:"Photographie chaque vêtement seul, sur fond uni si possible. Touche la pastille pour corriger la couleur.",ai:"✨ Analyser avec l’IA",aib:"Analyse en cours…",aif:"L’IA n’a pas pu analyser certaines photos.",go:"Trouver mon outfit",
+occ:["Tous les jours","Travail","Soirée","Cérémonie","Sport"],sea:["Toute saison","Été / chaud","Hiver / froid","Automne","Printemps"],skin:["Teint (optionnel)","Peau claire","Peau moyenne","Peau mate","Peau foncée"],und:["Sous-ton (optionnel)","Sous-ton chaud","Sous-ton froid","Sous-ton neutre"],
+types:["Haut","Bas","Veste","Chaussures"],pats:["Uni","Rayé","Carreaux","Imprimé"],
+res:"Mes conseils",best:"⭐ Le meilleur choix",opt:"Option ",watch:"À surveiller : ",need:"Mets des types différents (par ex. un haut et un bas) pour composer un outfit.",save:"🤍 Sauvegarder",saved:"❤️ Sauvegardé",nosave:"Sauvegarde impossible",share:"📤 Partager",
+favs:"❤️ Mes favoris",favE:"Pas encore d’outfit sauvegardé.",del:"Supprimer",ward:"👚 Ma garde-robe",wardE:"Touche « Garder » sur un habit pour le ranger ici.",keep:"🗂 Garder",kept:"✓ Gardé",use:"Utiliser",useAll:"Tout utiliser",sync:"☁️ Synchronisé avec ton compte claude.ai",by:"Créé avec W fit",
+n1:"deux tons neutres, un classique qui ne rate jamais",n2:"un neutre qui laisse la couleur ressortir",a:"des teintes voisines, un look harmonieux",c1:"des teintes proches mais pas identiques, un peu hésitant",c2:"deux couleurs qui se disputent l’attention",c3:"un contraste coloré assez audacieux",c4:"des couleurs complémentaires, contraste net et élégant",
+pat:"Deux motifs ensemble, c’est risqué : garde-en un seul.",work:"Sobre et sûr pour le travail.",workb:"Couleurs vives : un peu voyantes pour le travail.",eve:"Tons sombres, parfaits pour la soirée.",hot:"Tons clairs, agréables quand il fait chaud.",cold:"Tons profonds, de saison pour l’hiver.",fall:"Teintes chaudes qui collent à l’automne.",spr:"Couleurs fraîches de printemps.",jacket:"Ajoute une veste, il fera froid.",warm:"Près du visage, cette couleur va bien à ton sous-ton chaud.",cool:"Près du visage, cette couleur va bien à ton sous-ton froid.",clash:"Près du visage, cette couleur est moins flatteuse pour ton sous-ton.",pale:"Un ton très pâle peut délaver un teint clair.",vivid:"Une couleur vive met bien en valeur une peau foncée.",many:"Beaucoup de couleurs en même temps.",
+c_noir:"noir",c_blanc:"blanc",c_grisf:"gris foncé",c_gris:"gris",c_grisc:"gris clair",c_beige:"beige",c_marron:"marron",c_marine:"bleu marine",c_rouge:"rouge",c_rose:"rose",c_orange:"orange",c_jaune:"jaune",c_vertc:"vert clair",c_vert:"vert",c_turq:"turquoise",c_bleu:"bleu",c_violet:"violet",c_fuchsia:"fuchsia"},
+en:{sub:"Can’t decide what to wear? Photograph your clothes and W fit picks the colors that match best.",add:"📷 Add photos of clothes",hint:"Photograph each piece alone, on a plain background if possible. Tap the dot to fix the color.",ai:"✨ Analyze with AI",aib:"Analyzing…",aif:"AI couldn’t analyze some photos.",go:"Find my outfit",
+occ:["Everyday","Work","Evening out","Ceremony","Sport"],sea:["Any season","Summer / hot","Winter / cold","Autumn","Spring"],skin:["Skin tone (optional)","Fair skin","Medium skin","Tan skin","Deep skin"],und:["Undertone (optional)","Warm undertone","Cool undertone","Neutral undertone"],
+types:["Top","Bottom","Jacket","Shoes"],pats:["Plain","Striped","Checked","Printed"],
+res:"My advice",best:"⭐ Best choice",opt:"Option ",watch:"Watch out: ",need:"Use different types (e.g. a top and a bottom) to build an outfit.",save:"🤍 Save",saved:"❤️ Saved",nosave:"Can’t save here",share:"📤 Share",
+favs:"❤️ My favorites",favE:"No saved outfit yet.",del:"Delete",ward:"👚 My wardrobe",wardE:"Tap “Keep” on a piece to store it here.",keep:"🗂 Keep",kept:"✓ Kept",use:"Use",useAll:"Use all",sync:"☁️ Synced with your claude.ai account",by:"Made with W fit",
+n1:"two neutral tones, a classic that never fails",n2:"a neutral that lets the color stand out",a:"neighboring hues, a harmonious look",c1:"close but not identical hues, a bit hesitant",c2:"two colors competing for attention",c3:"a fairly bold color contrast",c4:"complementary colors, sharp and elegant contrast",
+pat:"Two patterns together is risky: keep just one.",work:"Understated and safe for work.",workb:"Bright colors: a bit loud for work.",eve:"Dark tones, perfect for an evening out.",hot:"Light tones, comfortable in the heat.",cold:"Deep tones, right for winter.",fall:"Warm hues that suit autumn.",spr:"Fresh spring colors.",jacket:"Add a jacket, it will be cold.",warm:"Near the face, this color suits your warm undertone.",cool:"Near the face, this color suits your cool undertone.",clash:"Near the face, this color is less flattering for your undertone.",pale:"A very pale tone can wash out fair skin.",vivid:"A vivid color flatters deep skin.",many:"Lots of colors at once.",
+c_noir:"black",c_blanc:"white",c_grisf:"dark gray",c_gris:"gray",c_grisc:"light gray",c_beige:"beige",c_marron:"brown",c_marine:"navy",c_rouge:"red",c_rose:"pink",c_orange:"orange",c_jaune:"yellow",c_vertc:"light green",c_vert:"green",c_turq:"turquoise",c_bleu:"blue",c_violet:"purple",c_fuchsia:"fuchsia"}};
+const $=s=>document.querySelector(s);
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(_){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(_){return false}};
+let lang=lsGet("wfit:lang")||((navigator.language||"fr").startsWith("fr")?"fr":"en");
+const t=k=>L[lang][k]||k;
+let items=[],uid=0,lastR=null,cap={};
+
+const toHsl=(r,g,b)=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;let h=0,s=0;
+ if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}return{h,s,l}};
+const hex=(r,g,b)=>"#"+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,"0")).join("");
+const fromHex=x=>{const n=parseInt(x.slice(1),16);return toHsl(n>>16,(n>>8)&255,n&255)};
+const neutral=c=>c.s<.16||c.l<.13||c.l>.9;
+const okHex=h=>/^#[0-9a-f]{6}$/i.test(h);
+const okImg=s=>typeof s==="string"&&(s.startsWith("data:image/")||s.startsWith("blob:"));
+
+function cname(c){
+ if(c.l<.13)return"noir";if(c.l>.92)return"blanc";
+ if(c.s<.16)return c.l<.4?"grisf":c.l<.7?"gris":"grisc";
+ const h=c.h;
+ if(h>=20&&h<50&&c.s<.6&&c.l>.62)return"beige";
+ if(h>=10&&h<45&&c.l<.38)return"marron";
+ if(h>=200&&h<250&&c.l<.3)return"marine";
+ if(h<12||h>=345)return c.l>.7?"rose":"rouge";
+ if(h<40)return"orange";if(h<68)return"jaune";if(h<95)return"vertc";
+ if(h<165)return"vert";if(h<195)return"turq";if(h<255)return"bleu";
+ if(h<290)return"violet";return c.l>.6?"rose":"fuchsia";
+}
+const cn=c=>t("c_"+cname(c));
+
+function dominant(img){
+ const S=64,cv=document.createElement("canvas");cv.width=cv.height=S;
+ const x=cv.getContext("2d",{willReadFrequently:true});
+ x.drawImage(img,img.naturalWidth*.25,img.naturalHeight*.25,img.naturalWidth*.5,img.naturalHeight*.5,0,0,S,S);
+ const d=x.getImageData(0,0,S,S).data,bk={};
+ for(let i=0;i<d.length;i+=4){const c=toHsl(d[i],d[i+1],d[i+2]);
+  const k=neutral(c)?"n"+Math.floor(c.l*5):"c"+Math.floor(c.h/20)+"-"+Math.floor(c.l*3);
+  const e=bk[k]||(bk[k]={n:0,r:0,g:0,b:0});e.n++;e.r+=d[i];e.g+=d[i+1];e.b+=d[i+2]}
+ const b=Object.values(bk).sort((p,q)=>q.n-p.n)[0];
+ return hex(b.r/b.n,b.g/b.n,b.b/b.n);
+}
+function scaled(img,S,square,q){
+ const cv=document.createElement("canvas");let sx=0,sy=0,sw=img.naturalWidth,sh=img.naturalHeight,w,h;
+ if(square){const m=Math.min(sw,sh);sx=(sw-m)/2;sy=(sh-m)/2;sw=sh=m;w=h=S}else{const r=Math.min(1,S/Math.max(sw,sh));w=Math.round(sw*r);h=Math.round(sh*r)}
+ cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,sx,sy,sw,sh,0,0,w,h);
+ return square?cv.toDataURL("image/jpeg",q||.6):new Promise(r=>cv.toBlob(r,"image/jpeg",.8));
+}
+
+/* ---------- scoring ---------- */
+function pair(a,b){
+ const na=neutral(a),nb=neutral(b);let sc,w;const dl=Math.abs(a.l-b.l);
+ if(na&&nb){sc=84;w="n1"}else if(na||nb){sc=80;w="n2"}
+ else{let dh=Math.abs(a.h-b.h);if(dh>180)dh=360-dh;
+  if(dh<=30){sc=82;w="a"}else if(dh<60){sc=62;w="c1"}else if(dh<100){sc=48;w="c2"}else if(dh<150){sc=66;w="c3"}else{sc=86;w="c4"}
+  if(a.s>.7&&b.s>.7)sc-=12}
+ if(dl>.25)sc+=8;else if(dl<.08&&!(na&&nb))sc-=4;
+ return{sc:Math.max(0,Math.min(100,sc)),w};
+}
+function combos(){
+ const g=[0,1,2,3].map(i=>items.filter(x=>x.type===i)).filter(x=>x.length);
+ let out=[[]];for(const gr of g){const n=[];for(const o of out)for(const i of gr)n.push([...o,i]);out=n}
+ return out.filter(o=>o.length>=2);
+}
+function evaluate(){
+ const occ=+$("#occ").value,sea=+$("#sea").value,skin=+$("#skin").value,und=+$("#und").value;
+ return combos().map(o=>{
+  const ps=[];for(let i=0;i<o.length;i++)for(let j=i+1;j<o.length;j++)ps.push({p:pair(o[i].hsl,o[j].hsl),a:o[i],b:o[j]});
+  let sc=ps.reduce((s,x)=>s+x.p.sc,0)/ps.length;const notes=[];
+  const nn=o.filter(x=>!neutral(x.hsl)),avgL=o.reduce((s,x)=>s+x.hsl.l,0)/o.length;
+  if(nn.length>2){sc-=10;notes.push("many")}
+  if(o.filter(x=>x.pat>0).length>1){sc-=15;notes.push("pat")}
+  if(occ===1||occ===3){if(nn.length<=1){sc+=6;notes.push("work")}else if(nn.some(x=>x.hsl.s>.75)){sc-=6;notes.push("workb")}}
+  if(occ===2&&avgL<.35){sc+=6;notes.push("eve")}
+  if(sea===1&&avgL>.55){sc+=6;notes.push("hot")}
+  if(sea===2){if(avgL<.45){sc+=5;notes.push("cold")}if(!o.some(x=>x.type===2))notes.push("jacket")}
+  if(sea===3&&nn.some(x=>(x.hsl.h>=10&&x.hsl.h<=55)||cname(x.hsl)==="marron")){sc+=6;notes.push("fall")}
+  if(sea===4&&nn.some(x=>x.hsl.l>.6&&x.hsl.s>.3)){sc+=6;notes.push("spr")}
+  const face=o.find(x=>x.type===0)||o.find(x=>x.type===2);
+  if(face&&!neutral(face.hsl)){const h=face.hsl.h,wm=h<70||h>330,cl=h>=160&&h<=300;
+   if(und===1){if(wm){sc+=5;notes.push("warm")}else if(cl){sc-=4;notes.push("clash")}}
+   if(und===2){if(cl){sc+=5;notes.push("cool")}else if(wm){sc-=4;notes.push("clash")}}
+   if(skin===4&&face.hsl.s>.5){sc+=3;notes.push("vivid")}}
+  if(face&&skin===1&&face.hsl.l>.88){sc-=4;notes.push("pale")}
+  return{o,ps,notes,sc:Math.max(0,Math.min(100,Math.round(sc)))};
+ }).sort((a,b)=>b.sc-a.sc).slice(0,3);
+}
+
+/* ---------- storage / sync ---------- */
+const FK="wfit:favs",WK="wfit:ward";
+const loadJ=k=>{try{const v=JSON.parse(lsGet(k)||"[]");return Array.isArray(v)?v:[]}catch(_){return[]}};
+let ref=null,pt;
+function saveJ(k,v){const ok=lsSet(k,JSON.stringify(v));clearTimeout(pt);pt=setTimeout(()=>{if(ref)ref.set({favs:JSON.stringify(loadJ(FK)),ward:JSON.stringify(loadJ(WK)),at:Date.now()}).catch(()=>{})},800);return ok}
+const union=(a,b)=>{const m=new Map();[...b,...a].forEach(x=>m.set(x.id,x));return[...m.values()].sort((p,q)=>q.id-p.id)};
+
+/* ---------- share card ---------- */
+async function shareCard(ps,sc,btn){
+ const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+ x.fillStyle="#faf7f2";x.fillRect(0,0,W,H);
+ x.font="bold 96px system-ui,sans-serif";x.textAlign="left";
+ const w1=x.measureText("W ").width,tw=w1+x.measureText("fit").width,s0=(W-tw)/2;
+ x.fillStyle="#1d1a17";x.fillText("W ",s0,160);x.fillStyle="#c2410c";x.fillText("fit",s0+w1,160);
+ const n=ps.length,gap=24,sz=Math.min(440,Math.floor((W-120-(n-1)*gap)/n)),x0=(W-(n*sz+(n-1)*gap))/2,y=300;
+ for(let i=0;i<n;i++){const p=ps[i],px=x0+i*(sz+gap);
+  x.save();x.beginPath();x.roundRect?x.roundRect(px,y,sz,sz,28):x.rect(px,y,sz,sz);x.clip();
+  try{const im=new Image();im.src=p.src;await im.decode();const m=Math.min(im.naturalWidth,im.naturalHeight);x.drawImage(im,(im.naturalWidth-m)/2,(im.naturalHeight-m)/2,m,m,px,y,sz,sz)}catch(_){x.fillStyle=p.hex;x.fillRect(px,y,sz,sz)}
+  x.restore();
+  x.fillStyle=p.hex;x.beginPath();x.arc(px+sz/2-60,y+sz+44,16,0,7);x.fill();
+  x.fillStyle="#1d1a17";x.font="32px system-ui,sans-serif";x.textAlign="left";x.fillText(p.name,px+sz/2-34,y+sz+55);}
+ const by=y+sz+170;x.fillStyle="#e8e1d8";x.fillRect(100,by,W-200,24);x.fillStyle="#c2410c";x.fillRect(100,by,(W-200)*sc/100,24);
+ x.fillStyle="#1d1a17";x.font="bold 80px system-ui,sans-serif";x.textAlign="center";x.fillText(sc+"/100",W/2,by+130);
+ x.fillStyle="#7a726a";x.font="32px system-ui,sans-serif";x.fillText(t("by"),W/2,H-70);
+ const blob=await new Promise(r=>c.toBlob(r,"image/png")),file=new File([blob],"w-fit-outfit.png",{type:"image/png"});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}}catch(e){if(e&&e.name==="AbortError")return}
+ try{const d=await claude.use("downloads");if(d){await d.save({filename:"w-fit-outfit.png",data:blob});return}}catch(_){}
+ try{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="w-fit-outfit.png";document.body.appendChild(a);a.click();a.remove();return}catch(_){}
+ btn.textContent=t("nosave");
+}
+
+/* ---------- render ---------- */
+function fillSel(id,arr){const s=$(id),v=s.value||0;s.innerHTML="";arr.forEach((n,i)=>{const o=document.createElement("option");o.value=i;o.textContent=n;s.appendChild(o)});s.value=v}
+function statics(){
+ document.documentElement.lang=lang;
+ $("#sub").textContent=t("sub");$("#add").textContent=t("add");$("#hint").textContent=t("hint");$("#go").textContent=t("go");$("#ai").textContent=t("ai");
+ $("#lang").textContent=lang==="fr"?"EN":"FR";
+ fillSel("#occ",t("occ"));fillSel("#sea",t("sea"));fillSel("#skin",t("skin"));fillSel("#und",t("und"));
+}
+function sel(arr,cur,fn,cls){const s=document.createElement("select");arr.forEach((n,i)=>{const o=document.createElement("option");o.value=i;o.textContent=n;s.appendChild(o)});s.value=cur;s.onchange=()=>fn(+s.value);return s}
+function renderList(){
+ const L2=$("#list");L2.innerHTML="";
+ items.forEach(it=>{
+  const d=document.createElement("div");d.className="item";
+  d.innerHTML='<img alt=""><div class="info"><div class="nm"><input type="color"><span></span></div><div class="row"></div></div><button class="x">×</button>';
+  d.querySelector("img").src=it.url;
+  const ci=d.querySelector("input"),sp=d.querySelector(".nm span"),row=d.querySelector(".row");
+  ci.value=it.hex;sp.textContent=cn(it.hsl);
+  ci.oninput=()=>{it.hex=ci.value;it.hsl=fromHex(ci.value);sp.textContent=cn(it.hsl)};
+  row.appendChild(sel(t("types"),it.type,v=>it.type=v));row.appendChild(sel(t("pats"),it.pat,v=>it.pat=v));
+  const kb=document.createElement("button");kb.className="k";kb.textContent=t("keep");
+  kb.onclick=()=>{const w=loadJ(WK);w.unshift({id:Date.now()+it.id,t:it.thumb,h:it.hex,ty:it.type,pa:it.pat});saveJ(WK,w.slice(0,60));kb.textContent=t("kept");kb.disabled=true;renderWard()};
+  row.appendChild(kb);
+  d.querySelector(".x").onclick=()=>{items=items.filter(x=>x.id!==it.id);renderList();$("#res").innerHTML="";lastR=null};
+  L2.appendChild(d);
+ });
+ $("#go").disabled=items.length<2;$("#ai").hidden=!(cap.ai&&items.length);
+}
+function pieces(o){return o.map(x=>({src:x.url,hex:x.hex,name:cn(x.hsl)}))}
+function renderRes(){
+ const box=$("#res");if(!lastR){box.innerHTML="";return}
+ if(!lastR.length){box.innerHTML='<p class="hint"></p>';box.firstChild.textContent=t("need");return}
+ box.innerHTML="<h2></h2>";box.firstChild.textContent=t("res");
+ lastR.forEach((r,i)=>{
+  const d=document.createElement("div");d.className="out"+(i?"":" best");
+  const sorted=r.ps.slice().sort((a,b)=>b.p.sc-a.p.sc),st=sorted[0],wk=sorted[sorted.length-1];
+  const tg=document.createElement("span");tg.className="tag"+(i?" o":"");tg.textContent=i?t("opt")+(i+1):t("best");d.appendChild(tg);
+  const pics=document.createElement("div");pics.className="pics";
+  r.o.forEach(x=>{const c=document.createElement("div"),im=document.createElement("img"),sw=document.createElement("span"),nm=document.createElement("span");
+   im.src=x.url;im.alt="";sw.className="sw";sw.style.background=x.hex;nm.textContent=cn(x.hsl);c.append(im,sw,nm);pics.appendChild(c)});
+  d.appendChild(pics);
+  const bar=document.createElement("div");bar.className="bar";bar.innerHTML='<div class="track"><div class="fill"></div></div><span class="score"></span>';
+  bar.querySelector(".fill").style.width=r.sc+"%";bar.querySelector(".score").textContent=r.sc+"/100";d.appendChild(bar);
+  const ul=document.createElement("ul");ul.className="why";
+  const li=s=>{const e=document.createElement("li");e.textContent=s;ul.appendChild(e)};
+  li(cn(st.a.hsl)+" + "+cn(st.b.hsl)+" : "+t(st.p.w));
+  if(r.ps.length>1&&wk!==st&&wk.p.sc<65)li(t("watch")+cn(wk.a.hsl)+" + "+cn(wk.b.hsl)+", "+t(wk.p.w));
+  r.notes.forEach(n=>li(t(n)));d.appendChild(ul);
+  const ac=document.createElement("div");ac.className="acts";
+  const fb=document.createElement("button");fb.textContent=t("save");
+  fb.onclick=()=>{const f=loadJ(FK),ps=r.o.map(x=>({t:x.thumb,h:x.hex,ty:x.type,pa:x.pat,n:cname(x.hsl)})),key=ps.map(p=>p.h+p.ty+p.pa).join("|");
+   if(!f.some(x=>x.key===key))f.unshift({id:Date.now(),key,sc:r.sc,pieces:ps});
+   if(saveJ(FK,f.slice(0,30))){fb.textContent=t("saved");fb.disabled=true;renderFavs()}else fb.textContent=t("nosave")};
+  const sb=document.createElement("button");sb.textContent=t("share");sb.onclick=()=>shareCard(pieces(r.o),r.sc,sb);
+  ac.append(fb,sb);d.appendChild(ac);box.appendChild(d);
+ });
+}
+function renderFavs(){
+ const box=$("#favs"),f=loadJ(FK);box.innerHTML="<h2></h2>";box.firstChild.textContent=t("favs");
+ if(!f.length){const p=document.createElement("p");p.className="hint";p.textContent=t("favE");box.appendChild(p);return}
+ f.forEach(o=>{
+  const d=document.createElement("div");d.className="out";const pics=document.createElement("div");pics.className="pics";
+  o.pieces.forEach(p=>{const c=document.createElement("div"),im=document.createElement("img"),sw=document.createElement("span"),nm=document.createElement("span");
+   if(okImg(p.t))im.src=p.t;im.alt="";sw.className="sw";sw.style.background=okHex(p.h)?p.h:"#888";nm.textContent=L[lang]["c_"+p.n]||"";c.append(im,sw,nm);pics.appendChild(c)});
+  d.appendChild(pics);
+  const fh=document.createElement("div");fh.className="fh";
+  const sc=document.createElement("span");sc.className="score";sc.textContent=(+o.sc||0)+"/100";
+  const sh=document.createElement("button");sh.className="k";sh.textContent=t("share");
+  sh.onclick=()=>shareCard(o.pieces.map(p=>({src:okImg(p.t)?p.t:"",hex:okHex(p.h)?p.h:"#888",name:L[lang]["c_"+p.n]||""})),+o.sc||0,sh);
+  const dl=document.createElement("button");dl.className="del";dl.textContent=t("del");
+  dl.onclick=()=>{saveJ(FK,loadJ(FK).filter(x=>x.id!==o.id));renderFavs()};
+  const rt=document.createElement("span");rt.append(sh,dl);fh.append(sc,rt);d.appendChild(fh);box.appendChild(d);
+ });
+}
+function addFromWard(w){
+ if(items.length>=24||!okImg(w.t)||!okHex(w.h))return;
+ items.push({id:++uid,url:w.t,thumb:w.t,hex:w.h,hsl:fromHex(w.h),type:w.ty|0,pat:w.pa|0});
+}
+function renderWard(){
+ const box=$("#ward"),w=loadJ(WK);box.innerHTML="<h2></h2>";box.firstChild.textContent=t("ward");
+ if(!w.length){const p=document.createElement("p");p.className="hint";p.textContent=t("wardE");box.appendChild(p);return}
+ const ua=document.createElement("button");ua.className="btn sm";ua.textContent=t("useAll");
+ ua.onclick=()=>{w.forEach(addFromWard);renderList();$("#go").click()};box.appendChild(ua);
+ const g=document.createElement("div");g.className="grid";
+ w.forEach(p=>{const d=document.createElement("div");d.className="item";
+  const im=document.createElement("img");if(okImg(p.t))im.src=p.t;im.alt="";
+  const inf=document.createElement("div");inf.className="info";
+  const nm=document.createElement("div");nm.className="nm";const sw=document.createElement("span");sw.className="sw";sw.style.background=okHex(p.h)?p.h:"#888";
+  const tx=document.createElement("span");tx.textContent=(okHex(p.h)?L[lang]["c_"+cname(fromHex(p.h))]:"")+" · "+(t("types")[p.ty|0]||"");nm.append(sw,tx);
+  const ub=document.createElement("button");ub.className="k";ub.textContent=t("use");ub.onclick=()=>{addFromWard(p);renderList()};
+  const x=document.createElement("button");x.className="x";x.textContent="×";x.onclick=()=>{saveJ(WK,loadJ(WK).filter(q=>q.id!==p.id));renderWard()};
+  const r=document.createElement("div");r.className="row";r.appendChild(ub);inf.append(nm,r);d.append(im,inf,x);g.appendChild(d)});
+ box.appendChild(g);
+}
+function renderAll(){statics();renderList();renderRes();renderFavs();renderWard();if(ref)$("#sync").textContent=t("sync")}
+
+/* ---------- events ---------- */
+$("#lang").onclick=()=>{lang=lang==="fr"?"en":"fr";lsSet("wfit:lang",lang);renderAll()};
+$("#add").onclick=()=>$("#file").click();
+$("#file").onchange=async e=>{
+ for(const f of e.target.files){
+  if(items.length>=24)break;
+  const url=URL.createObjectURL(f),img=new Image();img.src=url;
+  try{await img.decode()}catch(_){continue}
+  const h=dominant(img);
+  items.push({id:++uid,url,thumb:scaled(img,96,true),blob:await scaled(img,512,false),hex:h,hsl:fromHex(h),type:0,pat:0});
+ }
+ e.target.value="";renderList();
+};
+$("#go").onclick=()=>{lastR=evaluate();renderRes();$("#res").scrollIntoView({behavior:"smooth"})};
+$("#ai").onclick=async()=>{
+ const b=$("#ai");b.disabled=true;b.textContent=t("aib");let fail=0;
+ for(const it of items){if(!it.blob)continue;
+  try{const r=await cap.ai.json('Image of one clothing item. Reply ONLY with JSON: {"type":"Top|Bottom|Jacket|Shoes","hex":"#rrggbb dominant color of the garment itself, not the background","pattern":"Plain|Striped|Checked|Printed"}',{images:[it.blob],modelTier:"quick"});
+   if(r&&okHex(r.hex)){it.hex=r.hex;it.hsl=fromHex(r.hex)}
+   const ty=["Top","Bottom","Jacket","Shoes"].indexOf(r&&r.type),pa=["Plain","Striped","Checked","Printed"].indexOf(r&&r.pattern);
+   if(ty>=0)it.type=ty;if(pa>=0)it.pat=pa;
+  }catch(_){fail++;if(_&&(_.code==="not_granted"||_.code==="rate_limited"))break}}
+ b.disabled=false;b.textContent=fail?t("aif"):t("ai");renderList();
+};
+
+renderAll();
+(async()=>{
+ if(!(window.claude&&claude.use))return;
+ try{const s=await claude.use("sample");if(s){const l=await s.limits();if(l&&l.images){cap.ai=s;renderList()}}}catch(_){}
+ try{const [db,us]=await Promise.all([claude.use("db"),claude.use("user")]);
+  const id=db&&us?await us.id():null;if(!id)return;
+  const r=db.doc("data/users/"+id+"/wfit"),snap=await r.get();
+  if(snap.exists){const d=snap.data()||{};
+   const f=union(loadJ(FK),JSON.parse(d.favs||"[]")),w=union(loadJ(WK),JSON.parse(d.ward||"[]"));
+   lsSet(FK,JSON.stringify(f.slice(0,30)));lsSet(WK,JSON.stringify(w.slice(0,60)));}
+  ref=r;saveJ(FK,loadJ(FK));renderFavs();renderWard();$("#sync").textContent=t("sync");
+ }catch(_){}
+})();
+
+/* ---------- PWA ---------- */
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+let dp=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;$("#install").hidden=false});
+$("#install").onclick=async()=>{if(!dp)return;dp.prompt();await dp.userChoice;dp=null;$("#install").hidden=true};
+window.addEventListener("appinstalled",()=>{$("#install").hidden=true});
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!navigator.standalone)$("#ios").hidden=false;
+</script>
+</body>
+</html>

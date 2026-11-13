@@ -1,0 +1,37 @@
+W FIT – DOSSIER INSTALLABLE (PWA)
+=================================
+
+Contenu du dossier
+- index.html     : l'appli
+- manifest.json  : nom, couleurs et icônes (ce qui rend l'appli installable)
+- sw.js          : service worker (fonctionne hors connexion)
+- icons/         : icônes 192, 512, maskable 512 et iPhone 180
+
+1) METTRE EN LIGNE (gratuit, 2 minutes) – Netlify
+   a. Va sur app.netlify.com et crée un compte gratuit.
+   b. Dans « Sites », glisse-dépose le DOSSIER décompressé "wfit-pwa" (pas le zip).
+   c. Tu obtiens un lien du type https://nom-aleatoire.netlify.app
+      (tu peux le renommer dans « Site configuration > Change site name »).
+   Autres options : Vercel, GitHub Pages ou Cloudflare Pages.
+   L'adresse DOIT être en https (c'est automatique sur ces services).
+
+2) INSTALLER L'APPLI
+   - Android (Chrome) : bouton « 📲 Installer W fit » dans l'appli,
+     ou menu ⋮ puis « Installer l'application ».
+   - iPhone (Safari) : bouton Partager puis « Sur l'écran d'accueil ».
+   - Ordinateur (Chrome/Edge) : icône d'installation dans la barre d'adresse.
+
+3) TESTER AVANT DE PARTAGER
+   Ouvre le lien sur ton téléphone, installe l'appli, puis coupe le réseau :
+   elle doit quand même s'ouvrir.
+
+4) METTRE À JOUR L'APPLI
+   Remplace les fichiers sur Netlify ET change le numéro de version dans sw.js
+   (ligne : const CACHE = "wfit-v1"; passe à "wfit-v2"), sinon les anciens
+   utilisateurs gardent l'ancienne version en cache.
+
+CE QUI CHANGE HORS DE CLAUDE.AI
+- Les favoris et la garde-robe restent sur l'appareil (pas de compte).
+- Le bouton « Analyser avec l'IA » n'apparaît pas (il fonctionne seulement sur claude.ai).
+  Pour l'avoir, il faudra brancher ta propre API d'IA de vision via un petit serveur.
+- Le bouton Partager utilise le partage du téléphone, sinon télécharge l'image.
